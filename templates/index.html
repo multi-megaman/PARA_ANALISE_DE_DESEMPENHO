@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>Car Registry</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='css/index.css') }}"
+    />
+  </head>
+  <body>
+    <div class="emoji-row left">🚗🚕🚙🚌🚎🏎️🚓🚑🚒🚐🚚🚛🚜</div>
+
+    <h1>🚗 Car Registry 🚙</h1>
+
+    <form id="carForm" method="GET" action="register">
+      <div class="inputs">
+        <input
+          type="text"
+          id="carPlate"
+          name="carPlate"
+          placeholder="Enter car plate"
+          required
+        />
+        <input
+          type="text"
+          id="carDescription"
+          name="carDescription"
+          placeholder="Enter car description"
+          required
+        />
+      </div>
+      <button type="submit">Register Car</button>
+    </form>
+
+    <h2>Registered Cars:</h2>
+    <ul id="carList"></ul>
+
+    <div class="emoji-row right">🚗🚕🚙🚌🚎🏎️🚓🚑🚒🚐🚚🚛🚜</div>
+  </body>
+
+  <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+</html>

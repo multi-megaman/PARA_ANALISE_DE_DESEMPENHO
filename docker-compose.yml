@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  flask-app:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - sqlite-data:/app/sql
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=app.py
+    command: python app.py
+
+volumes:
+  sqlite-data:
