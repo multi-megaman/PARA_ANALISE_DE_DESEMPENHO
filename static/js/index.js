@@ -39,17 +39,17 @@ function updateTotalCars() {
     });
 }
 
-function handleScroll() {
-  if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-    updateCarList();
-  }
-}
-
-window.addEventListener('scroll', handleScroll);
 
 // Initial load
 updateCarList();
 updateTotalCars();
+
+// Handle infinite scrolling
+window.addEventListener('scroll', () => {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 && !isLoading) {
+    updateCarList();
+  }
+});
 
 carForm.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -65,7 +65,6 @@ carForm.addEventListener("submit", function (e) {
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Success:', data);
       // Update cars array and only after successful registration
       updateCarList();
       updateTotalCars();
@@ -76,3 +75,24 @@ carForm.addEventListener("submit", function (e) {
   
     carForm.reset();
   });
+
+
+// Include the Socket.IO client library
+const socket = io();
+
+// Listen for the car_count_update event
+socket.on('car_count_update', function(data) {
+  console.log('Total cars:', data.total_cars);
+  // Update the totalCarsElement with the new car count
+  totalCarsElement.textContent = `Total Cars: ${data.total_cars}`;
+});
+
+// Listen for the new_car event
+socket.on('new_car', function(data) {
+  console.log('New car:', data);
+  // Add the new car to the car list
+  const li = document.createElement("li");
+  li.textContent = `${data.id}. ${data.plate} | ${data.description}`;
+  carList.appendChild(li);
+  offset += 1;
+});
