@@ -15,15 +15,24 @@
     <form id="carForm" method="GET" action="register">
       <div class="inputs">
         <input
-          type="number"
-          id="descriptionSize"
-          name="descriptionSize"
-          placeholder="Enter description size"
+          type="text"
+          id="carPlate"
+          name="carPlate"
+          placeholder="Enter car plate"
+          required
+        />
+        <input
+          type="text"
+          id="carDescription"
+          name="carDescription"
+          placeholder="Enter car description"
           required
         />
       </div>
       <button type="submit">Register Car</button>
     </form>
+
+
 
     <div>
       <h2>Total Cars: <span id="totalCars">0</span></h2>

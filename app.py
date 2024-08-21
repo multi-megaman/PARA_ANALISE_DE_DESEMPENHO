@@ -52,8 +52,8 @@ def register():
     try:
         with sqlite3.connect(DB_PATH, timeout=10) as conn:
             c = conn.cursor()
-            car_description = gen_lorem(int(request.json['desc_size']))
-            car_plate = gen_car_plate()
+            car_description = request.json["description"]
+            car_plate = request.json["plate"]
             c.execute("INSERT INTO cars (plate, description) VALUES (?, ?)", (car_plate, car_description))
             conn.commit()
             new_car = {"id": c.lastrowid, "plate": car_plate, "description": car_description}
@@ -84,15 +84,10 @@ def get_cars():
 
     # Debugging: Check the number of records in the table
     c.execute("SELECT COUNT(*) FROM cars")
-    total_records = c.fetchone()[0]
-    print(f"Total records in 'cars' table: {total_records}")
 
     c.execute("SELECT plate, description FROM cars LIMIT ? OFFSET ?", (limit, offset))
     cars = c.fetchall()
     conn.close()
-    
-    # Debugging: Log the fetched records
-    print(f"Fetched records: {cars}")
 
     return jsonify([{"plate": car[0], "description": car[1]} for car in cars])
 #--------------------------------------------

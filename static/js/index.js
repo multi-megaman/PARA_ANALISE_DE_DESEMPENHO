@@ -53,7 +53,8 @@ window.addEventListener('scroll', () => {
 
 carForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    const descriptionSize = document.getElementById("descriptionSize").value;
+    const carDescription = document.getElementById("carDescription").value;
+    const carPlate = document.getElementById("carPlate").value;
   
     // Call /register endpoint with the car model
     fetch('/register', {
@@ -61,7 +62,7 @@ carForm.addEventListener("submit", function (e) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({desc_size: descriptionSize}),
+      body: JSON.stringify({description: carDescription, plate: carPlate}),
     })
     .then(response => response.json())
     .then(data => {
