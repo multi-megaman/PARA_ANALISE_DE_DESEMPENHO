@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
 import sqlite3
 import random
@@ -9,15 +11,25 @@ from flask_socketio import SocketIO
 app = Flask(__name__)
 socketio = SocketIO(app)
 DB_PATH = 'sql/app.db'
+TIMEOUT_TIME = 60
 
+# Load environment variables from .env file
+load_dotenv()
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
+
+# Function to initialize the database
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS cars
-                 (id INTEGER PRIMARY KEY, plate TEXT, description TEXT)''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS cars (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            plate TEXT NOT NULL,
+            description TEXT NOT NULL
+        )
+    ''')
     conn.commit()
     conn.close()
-    print("Database initialized")
 
 def gen_lorem(words: int = 256):
     lorem = TextLorem(wsep=' ', srange=(words, words))
@@ -50,7 +62,7 @@ def home():
 @app.route('/register', methods=['POST'])
 def register():
     try:
-        with sqlite3.connect(DB_PATH, timeout=10) as conn:
+        with sqlite3.connect(DB_PATH, timeout=TIMEOUT_TIME) as conn:
             c = conn.cursor()
             car_description = request.json["description"]
             car_plate = request.json["plate"]
@@ -90,6 +102,28 @@ def get_cars():
     conn.close()
 
     return jsonify([{"plate": car[0], "description": car[1]} for car in cars])
+
+@app.route('/cars/delete', methods=['POST'])
+def delete_all_cars():
+    data = request.get_json()
+    if not data or 'password' not in data:
+        return jsonify({"error": "Password is required"}), 400
+
+    if data['password'] != ADMIN_PASSWORD:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    try:
+        with sqlite3.connect(DB_PATH, timeout=TIMEOUT_TIME) as conn:
+            c = conn.cursor()
+            c.execute("DELETE FROM cars")
+            conn.commit()
+            emit_car_count_update()
+        return jsonify({"message": "All cars deleted successfully"}), 200
+
+    except Exception as e:
+        error_message = str(e)
+        print(f"Error: {error_message}")
+        return jsonify({"error": error_message}), 500
 #--------------------------------------------
 @app.route('/cars/count', methods=['GET'])
 def get_car_count():

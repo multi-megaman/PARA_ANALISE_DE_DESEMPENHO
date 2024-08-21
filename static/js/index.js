@@ -78,6 +78,37 @@ carForm.addEventListener("submit", function (e) {
   });
 
 
+//call the delete endpoint
+document.getElementById('deleteButton').addEventListener('click', function() {
+  const password = prompt('Enter password to delete all cars:');
+
+  if (!password) {
+    alert('Password is required.');
+    return;
+  }
+
+  fetch('/cars/delete', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ password: password })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+      alert(data.error);
+    } else {
+      alert(data.message);
+      document.getElementById('totalCars').innerText = '0';
+      document.getElementById('carList').innerHTML = '';
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+});
+
 // Include the Socket.IO client library
 const socket = io();
 
