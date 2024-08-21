@@ -57,7 +57,15 @@ def get_cars():
     cars = c.fetchall()
     conn.close()
     return jsonify([{"plate": car[0], "description": car[1]} for car in cars])
-
+#--------------------------------------------
+@app.route('/cars/count', methods=['GET'])
+def get_car_count():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT COUNT(*) FROM cars")
+    count = c.fetchone()[0]
+    conn.close()
+    return jsonify({"total_cars": count})
 
 if __name__ == '__main__':
     init_db()

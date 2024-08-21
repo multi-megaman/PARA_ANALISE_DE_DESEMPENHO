@@ -1,5 +1,6 @@
 const carForm = document.getElementById("carForm");
 const carList = document.getElementById("carList");
+const totalCarsElement = document.getElementById('totalCars');
 
 let offset = 0;
 const limit = 20;
@@ -27,6 +28,17 @@ function updateCarList() {
     });
 }
 
+function updateTotalCars() {
+  fetch('/cars/count')
+    .then(response => response.json())
+    .then(data => {
+      totalCarsElement.textContent = data.total_cars;
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
 function handleScroll() {
   if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
     updateCarList();
@@ -37,6 +49,7 @@ window.addEventListener('scroll', handleScroll);
 
 // Initial load
 updateCarList();
+updateTotalCars();
 
 carForm.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -55,6 +68,7 @@ carForm.addEventListener("submit", function (e) {
       console.log('Success:', data);
       // Update cars array and only after successful registration
       updateCarList();
+      updateTotalCars();
     })
     .catch((error) => {
       console.error('Error:', error);
