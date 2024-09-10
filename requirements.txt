@@ -1,4 +1,5 @@
 flask==3.0.3
 lorem==0.1.1
 flask-socketio==5.3.6
+psutil
 python-dotenv

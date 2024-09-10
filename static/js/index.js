@@ -109,6 +109,31 @@ document.getElementById('deleteButton').addEventListener('click', function() {
   });
 });
 
+//call the reset_resources endpoint
+document.getElementById('resetResourcesButton').addEventListener('click', function() {
+  const password = prompt('Enter password to reset resources:');
+
+  if (!password) {
+    alert('Password is required.');
+    return;
+  }
+
+  fetch('/reset_resources', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ password: password })
+  })
+  .then(response => response.json())
+  .then(data => { 
+    alert(data.message);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}); 
+
 // Include the Socket.IO client library
 const socket = io();
 
