@@ -31,9 +31,11 @@ def make_single_request(description, plate, csv_writer):
     
     try:
         response_data = response.json()
-        print(f"Status Code: {response.status_code}, Response: {response_data}")
+        return 1
+        # print(f"Status Code: {response.status_code}, Response: {response_data}")
     except json.decoder.JSONDecodeError:
-        print(f"Status Code: {response.status_code}, Response could not be decoded as JSON.")
+        # print(f"Status Code: {response.status_code}, Response could not be decoded as JSON.")
+        return 0
 
 # Main function to make requests in threads
 def make_requests(num_words, num_requests):

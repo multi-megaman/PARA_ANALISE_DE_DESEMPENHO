@@ -16,7 +16,9 @@ from concurrent.futures import ThreadPoolExecutor
 app = Flask(__name__)
 socketio = SocketIO(app)
 DB_PATH = 'sql/app.db'
-TIMEOUT_TIME = 10
+TIMEOUT_TIME = 0.01
+THREADS = psutil.cpu_count()
+executor = ThreadPoolExecutor(max_workers=THREADS)
 
 # Load environment variables from .env file
 load_dotenv()
@@ -58,7 +60,6 @@ def emit_car_count_update():
     count = get_car_count_from_db()
     socketio.emit('car_count_update', {'total_cars': count})
 
-executor = ThreadPoolExecutor(max_workers=5)
 csv_file_path = 'performance_analysis/resource_usage.csv'
 process = psutil.Process(os.getpid())
 
@@ -71,8 +72,8 @@ def write_resource_usage(cpu_percent, memory_mb):
 def register_car(car_plate, car_description):
     try:
         # Monitor resources before registration
-        cpu_percent = process.cpu_percent(interval=0.1)
-        memory_mb = process.memory_info().rss / (1024 * 1024)  # Converter para MB
+        cpu_percent = psutil.cpu_percent(interval=0.1)  # Get the CPU usage of the entire machine
+        memory_mb = psutil.virtual_memory().used / (1024 * 1024)  # Get the memory usage of the entire machine
         
         write_resource_usage(cpu_percent, memory_mb)
         
@@ -84,11 +85,11 @@ def register_car(car_plate, car_description):
             new_car = {"id": c.lastrowid, "plate": car_plate, "description": car_description}
             socketio.emit('new_car', new_car)
             emit_car_count_update()
-        return {"message": "Registrado com sucesso"}
+        return {"message": "Registrado com sucesso"}, 200
     except Exception as e:
         error_message = str(e)
         print(f"Erro: {error_message}")
-        return {"error": error_message}
+        return {"error": error_message}, 500
 
 @app.route('/')
 def home():
@@ -99,7 +100,9 @@ def register():
     car_description = request.json["description"]
     car_plate = request.json["plate"]
     future = executor.submit(register_car, car_plate, car_description)
-    return jsonify({"message": "Registro iniciado"}), 202
+    result, status_code = future.result()  # Wait the task to finish
+
+    return jsonify(result), status_code  # Return the result and the status code
 
 #--------------------------------------------
 @app.route('/cars', methods=['GET'])
