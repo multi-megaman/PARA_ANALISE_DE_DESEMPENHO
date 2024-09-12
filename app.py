@@ -16,7 +16,7 @@ from concurrent.futures import ThreadPoolExecutor
 app = Flask(__name__)
 socketio = SocketIO(app)
 DB_PATH = 'sql/app.db'
-TIMEOUT_TIME = 0.01
+TIMEOUT_TIME = 1
 THREADS = psutil.cpu_count()
 executor = ThreadPoolExecutor(max_workers=THREADS)
 
@@ -88,7 +88,7 @@ def register_car(car_plate, car_description):
         return {"message": "Registrado com sucesso"}, 200
     except Exception as e:
         error_message = str(e)
-        print(f"Erro: {error_message}")
+        # print(f"Erro: {error_message}")
         return {"error": error_message}, 500
 
 @app.route('/')
@@ -148,7 +148,7 @@ def delete_all_cars():
 
     except Exception as e:
         error_message = str(e)
-        print(f"Error: {error_message}")
+        # print(f"Error: {error_message}")
         return jsonify({"error": error_message}), 500
 #--------------------------------------------
 @app.route('/cars/count', methods=['GET'])

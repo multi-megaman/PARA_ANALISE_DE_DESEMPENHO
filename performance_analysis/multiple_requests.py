@@ -67,7 +67,7 @@ if __name__ == "__main__":
         csv_writer.writerow(["Tempo de resposta", "Latencia", "Error (0 = OK, 1 = Error)"])
 
     for x in range(num_repeat):
-        print(f"Starting the {x+1}/{len(num_repeat)} set of requests...")
+        print(f"Starting the {x+1} set of requests...")
         make_requests(num_words, num_requests, csv_path)
         time.sleep(10)
     print("Finished sending requests to the /register endpoint.")
