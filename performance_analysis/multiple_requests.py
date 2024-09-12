@@ -8,7 +8,7 @@ import time
 import csv
 
 # Endpoint URL
-url = "http://127.0.0.1:5000/register"
+url = "http://192.168.1.107:5000/register"
 
 # Function to generate a random license plate
 def generate_random_plate():
@@ -32,17 +32,14 @@ def make_single_request(description, plate, csv_writer):
     try:
         response_data = response.json()
         return 1
-        # print(f"Status Code: {response.status_code}, Response: {response_data}")
     except json.decoder.JSONDecodeError:
-        # print(f"Status Code: {response.status_code}, Response could not be decoded as JSON.")
         return 0
 
 # Main function to make requests in threads
-def make_requests(num_words, num_requests):
+def make_requests(num_words, num_requests, csv_path):
     threads = []
-    with open('performance_analysis/request_results.csv', 'w', newline='') as csvfile:
+    with open(csv_path, 'a', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
-        csv_writer.writerow(['Tempo de Resposta', 'Latência', 'Erro'])
         
         for _ in range(num_requests):
             lorem = TextLorem(wsep=' ', srange=(num_words, num_words))
@@ -54,10 +51,19 @@ def make_requests(num_words, num_requests):
 
         for thread in threads:
             thread.join()
+
 if __name__ == "__main__":
+    csv_path = 'performance_analysis/request_results.csv'
     num_words = int(input("Enter the number of words for each description: "))
     num_requests = int(input("Enter the number of requests to be sent: "))
+    num_repeat = int(input("Enter the number of times the requests will be repeated: "))
 
+    with open(csv_path, 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(["Tempo de resposta", "Latencia", "Error (0 = OK, 1 = Error)"])
+        
     print(f"Starting {num_requests} requests to the /register endpoint.")
-    make_requests(num_words, num_requests)
+    for _ in range(num_repeat):
+        make_requests(num_words, num_requests, csv_path)
+        time.sleep(10)
     print("Finished sending requests to the /register endpoint.")
