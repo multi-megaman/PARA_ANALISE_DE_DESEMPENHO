@@ -38,17 +38,25 @@ def make_single_request(description, plate, csv_writer):
 # Main function to make requests in threads
 def make_requests(num_words, num_requests, csv_path):
     threads = []
+    requests_data = []
+
+    # Generate all random plates and descriptions
+    for _ in range(num_requests):
+        lorem = TextLorem(wsep=' ', srange=(num_words, num_words))
+        description = lorem.sentence()
+        plate = generate_random_plate()
+        requests_data.append((description, plate))
+
     with open(csv_path, 'a', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
         
-        for _ in range(num_requests):
-            lorem = TextLorem(wsep=' ', srange=(num_words, num_words))
-            description = lorem.sentence()
-            plate = generate_random_plate()
+        # Create and start threads
+        for description, plate in requests_data:
             thread = threading.Thread(target=make_single_request, args=(description, plate, csv_writer))
             threads.append(thread)
             thread.start()
 
+        # Wait for all threads to complete
         for thread in threads:
             thread.join()
 
@@ -61,7 +69,7 @@ if __name__ == "__main__":
     with open(csv_path, 'w', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(["Tempo de resposta", "Latencia", "Error (0 = OK, 1 = Error)"])
-        
+
     print(f"Starting {num_requests} requests to the /register endpoint.")
     for _ in range(num_repeat):
         make_requests(num_words, num_requests, csv_path)
