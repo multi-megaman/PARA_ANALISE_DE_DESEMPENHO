@@ -72,7 +72,7 @@ def write_resource_usage(cpu_percent, memory_mb):
 def register_car(car_plate, car_description):
     try:
         # Monitor resources before registration
-        cpu_percent = psutil.cpu_percent(interval=0.1)  # Get the CPU usage of the entire machine
+        cpu_percent = psutil.cpu_percent(interval=None)  # Get the CPU usage of the entire machine
         memory_mb = psutil.virtual_memory().used / (1024 * 1024)  # Get the memory usage of the entire machine
         
         write_resource_usage(cpu_percent, memory_mb)
@@ -170,7 +170,7 @@ def reset_resources():
         # Reset the CSV file
         csvfile.truncate(0)
         writer = csv.writer(csvfile)
-        writer.writerow(['Timestamp', 'CPU (%)', 'Memória (MB)'])
+        writer.writerow(['Timestamp', 'CPU (%)', 'Memoria (MB)'])
 
     return jsonify({"message": "Resources reset successfully"}), 200
 

@@ -8,7 +8,7 @@ import time
 import csv
 
 # Endpoint URL
-url = "http://192.168.1.107:5000/register"
+url = "http://127.0.0.1:5000/register"
 
 # Function to generate a random license plate
 def generate_random_plate():
@@ -29,11 +29,7 @@ def make_single_request(description, plate, csv_writer):
     
     csv_writer.writerow([response_time, latency, error])
     
-    try:
-        response_data = response.json()
-        return 1
-    except json.decoder.JSONDecodeError:
-        return 0
+    return response
 
 # Main function to make requests in threads
 def make_requests(num_words, num_requests, csv_path):
@@ -70,8 +66,8 @@ if __name__ == "__main__":
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(["Tempo de resposta", "Latencia", "Error (0 = OK, 1 = Error)"])
 
-    print(f"Starting {num_requests} requests to the /register endpoint.")
-    for _ in range(num_repeat):
+    for x in range(num_repeat):
+        print(f"Starting the {x+1}/{len(num_repeat)} set of requests...")
         make_requests(num_words, num_requests, csv_path)
         time.sleep(10)
     print("Finished sending requests to the /register endpoint.")
