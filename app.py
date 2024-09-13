@@ -1,4 +1,5 @@
 import csv
+from threading import Thread
 from flask import Flask, render_template, request, jsonify
 import time
 import hashlib
@@ -10,12 +11,23 @@ csv_path = 'performance_analysis/resource_usage_log.csv'
 
 # Simulate a heavy task that takes some time to complete
 def process_heavy_task(complexity):
+    # Simulates the allocation of memory
+    memory_hog = ['x' * 1000000 for _ in range(complexity * 50)]
+
     # Simulate a CPU-intensive task, like calculating a hash multiple times
-    # time.sleep(complexity)  
     result = hashlib.sha256(str(complexity).encode()).hexdigest()
     for _ in range(complexity * 100000):
         result = hashlib.sha256(result.encode()).hexdigest()
+
+    # Release the memory
+    del memory_hog
+
     return result
+
+def process_request_in_thread(complexity, return_data):
+    result = process_heavy_task(complexity)
+    log_resource_usage()
+    return_data['result'] = result
 
 def log_resource_usage():
     cpu_usage = psutil.cpu_percent(interval=1)  # Percentual de uso da CPU
@@ -46,16 +58,20 @@ def process_request():
     # Limit the complexity to a value between 1 and 10
     complexity = max(1, min(complexity, 10))
     
-    # Process the heavy task
-    result = process_heavy_task(complexity)
+    return_data = {}
 
+    # Process the heavy task
+    thread = Thread(target=process_request_in_thread, args=(complexity, return_data))
+    thread.start()
+    thread.join()
+    
     # Log resource usage
     log_resource_usage()
     
     # Return the result as JSON
     return jsonify({
         "complexity": complexity,
-        "result": result
+        "result": return_data.get('result')
     })
 
 if __name__ == '__main__':
