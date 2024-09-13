@@ -1,53 +1,31 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <title>Car Registry</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complexity Input</title>
     <link
       rel="stylesheet"
       type="text/css"
       href="{{ url_for('static', filename='css/index.css') }}"
     />
+    <style></style>
   </head>
   <body>
-    <div class="emoji-row left">🚗🚕🚙🚌🚎🏎️🚓🚑🚒🚐🚚🚛🚜</div>
-
-    <h1>🚗 Car Registry 🚙</h1>
-
-    <div>
-      <button id="deleteButton" class="deleteButton">Delete All Cars</button>
+    <div class="container">
+      <h1>Hash Calculator</h1>
+      <h4>Enter the Hash Complexity:</h4>
+      <input
+        type="number"
+        id="complexity"
+        placeholder="Enter complexity (1-10)"
+        min="1"
+        max="10"
+      />
+      <button onclick="sendRequest()">Submit</button>
+      <div class="result" id="result"></div>
     </div>
 
-    <form id="carForm" method="GET" action="register">
-      <div class="inputs">
-        <input
-          type="text"
-          id="carPlate"
-          name="carPlate"
-          placeholder="Enter car plate"
-          required
-        />
-        <input
-          type="text"
-          id="carDescription"
-          name="carDescription"
-          placeholder="Enter car description"
-          required
-        />
-      </div>
-      <button type="submit">Register Car</button>
-    </form>
-
-
-
-    <div>
-      <h2>Total Cars: <span id="totalCars">0</span></h2>
-    </div>
-    <ul id="carList"></ul>
-
-    <div class="emoji-row right">🚗🚕🚙🚌🚎🏎️🚓🚑🚒🚐🚚🚛🚜</div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
   </body>
-
-  <script src="{{ url_for('static', filename='js/index.js') }}"></script>
-  
 </html>
