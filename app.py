@@ -64,6 +64,7 @@ def register():
     try:
         with sqlite3.connect(DB_PATH, timeout=TIMEOUT_TIME) as conn:
             c = conn.cursor()
+            lorem = gen_lorem(len(request.json["description"].split())) #Adding more processing steps to simulate a higher demand on CPU with a higher description
             car_description = request.json["description"]
             car_plate = request.json["plate"]
             c.execute("INSERT INTO cars (plate, description) VALUES (?, ?)", (car_plate, car_description))
